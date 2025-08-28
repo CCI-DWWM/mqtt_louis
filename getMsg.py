@@ -1,30 +1,36 @@
 import paho.mqtt.client as mqtt
+import json, random
 
-# The callback for when the client receives a CONNACK response from the server.
-def on_connect(client, userdata, flags, reason_code, properties):
-    print(f"Connected with result code {reason_code}")
-    # Subscribing in on_connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
-    client.subscribe("$SYS/#")
+# Callback appelé lorsque le client se connecte au broker
+def on_connect(client, userdata, flags, reason_code, properties): #(client, userdata, flags, rc):
+    print("Connected with result code "+str(reason_code))
+    # Abonnement à un topic
+    client.subscribe("v3/+/devices/+/up")
 
-# The callback for when a PUBLISH message is received from the server.
+# Callback appelé quand un message est reçu du broker
 def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
+    data = json.loads(msg.payload.decode('utf-8'))
+    print(msg.topic, data.get('received_at'))
+    #print(json.dumps(data, indent=2))
+    print(json.dumps(data.get('uplink_message').get('decoded_payload'), indent=2))
 
-mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-mqttc.on_connect = on_connect
-mqttc.on_message = on_message
+APPID  = "cci-blois@ttn"
+PSW    = 'NNSXS.45H7G7TM4TNK72DVRBFD7JIUF334XPHARQN2CQA.IYIBJDTD4WEV3MAAOCJP7BSKMIZQ7IDDIPTZBUYGWRNJJY4T3WZA'
 
 # Création d'un client MQTT
-mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
 # Configuration du nom d'utilisateur et du mot de passe
-mqttc.username_pw_set(MQTT_USER, MQTT_PASSWORD)
+client.username_pw_set(APPID, PSW)
 
-mqttc.connect("mqtt.eclipseprojects.io", 1883, 60)
+# Attribution des fonctions de callback
+client.on_connect = on_connect
+client.on_message = on_message
 
-# Blocking call that processes network traffic, dispatches callbacks and
-# handles reconnecting.
-# Other loop*() functions are available that give a threaded interface and a
-# manual interface.
-mqttc.loop_forever()
+# Connexion au broker MQTT
+client.connect("eu1.cloud.thethings.network", 1883, 60)
+
+# Boucle pour maintenir le client en écoute des messages
+client.loop_forever()
+#while True:
+#    client.loop()
