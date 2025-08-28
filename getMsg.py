@@ -17,10 +17,10 @@ collection = db["messages"]
 # Callback de connexion
 def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:
-        print("✅ Connecté au broker MQTT.")
+        print(" Connecté au broker MQTT.")
         client.subscribe("v3/+/devices/+/up")
     else:
-        print(f"❌ Erreur de connexion : {reason_code}")
+        print(f" Erreur de connexion : {reason_code}")
 
 # Callback message
 def on_message(client, userdata, msg):
@@ -34,7 +34,7 @@ def on_message(client, userdata, msg):
             "payload": decoded_payload
         }
         collection.insert_one(document)
-        print("💾 Message sauvegardé :", document)
+        print(" Message sauvegardé :", document)
 
     except Exception as e:
         print("Erreur :", e)

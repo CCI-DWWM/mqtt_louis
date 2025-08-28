@@ -10,6 +10,7 @@ collection = db["messages"]
 
 @app.route("/")
 def index():
+
     return render_template("index.html")
 
 @app.route("/messages", methods=["GET"])
