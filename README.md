@@ -8,7 +8,8 @@ py -m venv .venv
 
 Activer l'environement virtuel
 ```bash
-py source .venv/Scripts/activate
+py source .\env\Scripts\Activate.ps1
+
 ```
 
 Installation des librairies

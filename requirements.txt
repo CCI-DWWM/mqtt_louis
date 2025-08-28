@@ -1,1 +1,4 @@
 paho-mqtt
+pymongo
+flask
+python-dotenv

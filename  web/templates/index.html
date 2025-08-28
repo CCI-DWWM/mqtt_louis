@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages IoT</title>
+</head>
+<body>
+  <h1>📡 Messages IoT reçus</h1>
+  <pre id="output">Chargement...</pre>
+
+  <script>
+    async function loadMessages() {
+      try {
+        const res = await fetch("/messages");
+        const data = await res.json();
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        document.getElementById("output").textContent = "❌ Erreur de chargement des messages.";
+      }
+    }
+    loadMessages();
+  </script>
+</body>
+</html>
