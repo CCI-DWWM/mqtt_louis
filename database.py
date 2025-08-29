@@ -9,14 +9,10 @@ def get_connection():
     try:
         uri = os.getenv('DB_URI')
         client = MongoClient(uri)
-
         database = client[os.getenv('DB_DATABASE')]
         collection = database[os.getenv('DB_COLLECTION')]
-
-        # start example code here
-        print("Database connected successfully")
-        # end example code here
+        print("Connexion à la base de données réussie")
         return client, database, collection
-
     except Exception as e:
-        raise Exception(f"The following error occurred: {e}")
+        print(f"Erreur de connexion à la base de données : {e}")
+        raise
