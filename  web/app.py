@@ -1,25 +1,28 @@
-import os
-import requests  # dependency
-from dotenv import load_dotenv
+from flask import Flask, jsonify, render_template
+from database import get_connection
 
-def send_msg_discord(username, content):
-    load_dotenv()
-    url = os.getenv('WEBHOOK_URL')  # webhook url, from here:
-    # https://i.imgur.com/f9XnAew.png
+app = Flask(__name__)
 
-    # for all params, see https://discord.com/developers/docs/resources/webhook#execute-webhook
-    data = {"username": username, "content": content}
+# Connexion à MongoDB
+client, database, collection = get_connection()
 
-    # leave this out if you dont want an embed
-    # for all params, see https://discord.com/developers/docs/resources/channel#embed-object
+@app.route("/")
+def index():
+    # Renvoie ton template HTML
+    return render_template("index.html")
 
-    result = requests.post(url, json=data)
+@app.route("/messages")
+def messages():
+    # Récupère tous les messages IoT depuis MongoDB
+    docs = collection.find().sort("received_at", -1)  # tri du plus récent au plus ancien
+    result = []
+    for doc in docs:
+        result.append({
+            "received_at": doc.get("received_at"),
+            "device_id": doc.get("end_device_ids", {}).get("device_id"),
+            "haut": doc.get("uplink_message", {}).get("decoded_payload", {}).get("haut")
+        })
+    return jsonify(result)
 
-    try:
-        result.raise_for_status()
-    except requests.exceptions.HTTPError as err:
-        print(f"HTTP error occurred: {err}")
-    else:
-        print(f"Payload delivered successfully, code {result.status_code}.")
-
-    # result: https://i.imgur.com/DRqXQzA.png
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
