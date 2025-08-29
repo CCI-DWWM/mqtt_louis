@@ -45,5 +45,5 @@ def get_connection():
 # Exemple d’utilisation
 if __name__ == "__main__":
     client, db, col = get_connection()
-    print("📂 Base :", db.name)
-    print("📑 Collection :", col.name)
+    print("Base :", db.name)
+    print("Collection :", col.name)
